@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-var cors = require('cors');
+const cors = require('cors');
 
 const app = express();
 const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/?retryWrites=true&w=majority&appName=MiniNetflixDatabase';
-const port = 5000;
+const port = 5001;
 
 //Conexion a cors
 app.use(cors())
@@ -23,7 +23,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('No se pudo conectar a MongoDB', err));
 
-
+  app.options('*', cors())
 
 app.get('/', (req, res) => {
     res.send('<h1>Buenas</h1>')
