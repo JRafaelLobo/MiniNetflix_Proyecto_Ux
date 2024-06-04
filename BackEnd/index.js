@@ -12,10 +12,41 @@ app.use(cors());
 
 const apiToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNDA0NGUwNWY5ZWUwYjRhODk5ZmJlYmI2NGVlZGRmNCIsInN1YiI6IjY2NWY2OTRiNzUyZWQ1YjBlYTdkNWI2OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.bZL-TdUZdqjUPNDAFdssr8RzL2DIGvJpp0N40sesXGU";
 
+//Base de datos - Todo lo relacionado a MongoDB
+/*Aquí establecemos la conexión a Mongo */
 mongoose.connect(mongoURI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('No se pudo conectar a MongoDB', err));
 
+/*Aquí creamos un esquema a Mongo */
+  const Schema = mongoose.Schema;
+  const usuarioSchema = new Schema({
+    nombre: String,
+    correo: String,
+    contraseña: String
+  });
+  
+/*Aquí creamos un modelo en Mongo */
+const Usuario = mongoose.model('Usuario', usuarioSchema);
+
+/*Aqui guardamos un usuario */
+const nuevoUsuario = new Usuario({
+  nombre: 'Marcela Tovar',
+  correo: 'marcela.tovar@example.com',
+  contraseña: 'password123'
+});
+
+nuevoUsuario.save()
+  .then(doc => {
+    console.log('Nuevo usuario creado:', doc);
+  })
+  .catch(err => {
+    console.error('Error al crear el usuario:', err);
+  });
+
+//Rutas de conexión
+
+//API
 app.get('/', (req, res) => {
   res.send('<h1>Buenas</h1>');
 });
