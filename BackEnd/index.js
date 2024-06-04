@@ -4,8 +4,9 @@ const cors = require('cors');
 const axios = require('axios');
 
 const app = express();
-const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/?retryWrites=true&w=majority&appName=MiniNetflixDatabase';
-const port = 3000; 
+//const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/?retryWrites=true&w=majority';
+const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/MiniNetflix?retryWrites=true&w=majority&appName=MiniNetflixDatabase';
+const port = 3000;
 
 // Configuración de CORS
 app.use(cors());
@@ -45,6 +46,7 @@ nuevoUsuario.save()
   });
 
 //Rutas de conexión
+
 
 //API
 app.get('/', (req, res) => {
