@@ -20,30 +20,41 @@ mongoose.connect(mongoURI)
   .catch(err => console.error('No se pudo conectar a MongoDB', err));
 
 /*Aquí creamos un esquema a Mongo */
-  const Schema = mongoose.Schema;
-  const usuarioSchema = new Schema({
-    nombre: String,
-    correo: String,
-    contraseña: String
-  });
-  
-/*Aquí creamos un modelo en Mongo */
-const Usuario = mongoose.model('Usuario', usuarioSchema);
-
-/*Aqui guardamos un usuario */
-const nuevoUsuario = new Usuario({
-  nombre: 'Marcela Tovar',
-  correo: 'marcela.tovar@example.com',
-  contraseña: 'password123'
+const Schema = mongoose.Schema;
+const usuarioSchema = new Schema({
+  nombre: String,
+  apellido: String,
+  _id: String,
+  contraseña: String
 });
 
-nuevoUsuario.save()
-  .then(doc => {
-    console.log('Nuevo usuario creado:', doc);
-  })
-  .catch(err => {
-    console.error('Error al crear el usuario:', err);
-  });
+const peliculasFavoritasSchema = new Schema({
+  usuarioId: { type: String, required: true },
+  _id: [{ type: String }]
+});
+
+
+
+/*Aquí creamos un modelo en Mongo */
+const Usuario = mongoose.model('Usuario', usuarioSchema);
+const PeliculasFav = mongoose.model('PeliculasFav',peliculasFavoritasSchema)
+
+
+/*Aqui guardamos un usuario */
+// const nuevoUsuario = new Usuario({
+//   nombre: 'Marcela',
+//   apellido: 'Tovar',
+//   _id: 'marcela.tovar@example.com',
+//   contraseña: 'password123'
+// });
+
+// nuevoUsuario.save()
+//   .then(doc => {
+//     console.log('Nuevo usuario creado:', doc);
+//   })
+//   .catch(err => {
+//     console.error('Error al crear el usuario:', err);
+//   });
 
 //Rutas de conexión
 
