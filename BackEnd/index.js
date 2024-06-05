@@ -28,7 +28,7 @@ const usuarioSchema = new Schema({
   nombre: String,
   apellido: String,
   _id: String,
-  contraseña: String
+  contrasenia: String
 });
 
 const peliculasFavoritasSchema = new Schema({
@@ -43,29 +43,47 @@ const Usuario = mongoose.model('Usuario', usuarioSchema);
 const PeliculasFav = mongoose.model('PeliculasFav',peliculasFavoritasSchema)
 
 
-/*Aqui guardamos un usuario */
-// const nuevoUsuario = new Usuario({
-//   nombre: 'Marcela',
-//   apellido: 'Tovar',
-//   _id: 'marcela.tovar@example.com',
-//   contraseña: 'password123'
-// });
-
-// nuevoUsuario.save()
-//   .then(doc => {
-//     console.log('Nuevo usuario creado:', doc);
-//   })
-//   .catch(err => {
-//     console.error('Error al crear el usuario:', err);
-//   });
 
 //Rutas de conexión
+/*Agregar un usuario a la base de datos */
+app.post('/agregarUsuario', (req, res) => {
+  const { nombre, apellido, correo, contrasenia } = req.body;
 
+  const nuevoUsuario = new Usuario({
+    nombre: nombre,
+    apellido:apellido,
+    _id : correo,
+    contrasenia : contrasenia
+  })
+
+  nuevoUsuario.save()
+  .then(doc => {
+    console.log('Nuevo usuario creado:', doc);
+    res.status(201).send('Nuevo usuario creado: ' + doc);
+  })
+  .catch(err => {
+    console.error('Error al crear el usuario:', err);
+    res.status(500).send('Error al crear el usuario: ' + err);
+  });
+});
+
+/*Buscar un usuario en la base de datos */
+app.post('/buscarUsuario', async (req, res) => {
+  try {
+    const { _id } = req.body; 
+    const existeUsuario = await Usuario.find({ _id });
+    if (existeUsuario != 0) {
+      res.status(200).send('Usuario existe en la base de datos: ' + existeUsuario);
+    } else {
+      res.status(404).send('Usuario no encontrado en la base de datos');
+    }
+  } catch (err) {
+    res.status(500).send('Error al buscar el usuario: ' + err.message);
+  }
+});
 
 //API
-app.get('/agregarUsuario', (req, res) => {
-  
-});
+
 
 axios.get('https://api.themoviedb.org/3/movie/157336?api_key=14044e05f9ee0b4a899fbebb64eeddf4')
   .then(response => {
