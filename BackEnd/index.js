@@ -4,7 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const { initializeApp } =require('firebase/app');
-const { getAuth,createUserWithEmailAndPassword} = require("firebase/auth");
+const { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} = require("firebase/auth");
 
 
 const app = express();
@@ -135,8 +135,30 @@ app.post('/obtenerPeliculasAleatorias', async (req, res) => {
 
 app.post('/obetenerId', async (req,res)=>{
   axios.get('https://api.themoviedb.org/3/movie/157336/videos?api_key=14044e05f9ee0b4a899fbebb64eeddf4');
-})
+});
 
+app.post('/logIn', async(req,res)=>{
+  const auth = getAuth(firebaseApp);
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  try {
+    const userCredentials = await signInWithEmailAndPassword(auth,email,password);
+    res.status(200).send("Sesión inciada con éxito");
+  } catch (err) {
+    res.status(500).send('Error al iniciar sesion: ' + err.message);
+  }
+});
+
+app.post('/logOut', async(req,res)=>{
+  const auth = getAuth(firebaseApp);
+  try {
+    await signOut(auth);
+    res.status(200).send("Sesión cerrada con éxito");
+  } catch (err) {
+    res.status(500).send('Error al cerrar sesión: ' + err.message);
+  }
+});
 
 
 //API
