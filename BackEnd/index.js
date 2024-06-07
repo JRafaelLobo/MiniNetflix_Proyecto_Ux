@@ -4,6 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const { initializeApp } =require('firebase/app');
+const { getAuth,createUserWithEmailAndPassword} = require("firebase/auth");
 
 
 const app = express();
@@ -19,7 +20,7 @@ const firebaseConfig = {
   appId: "1:751453774480:web:0f0dbc39c6c56387166e15",
   measurementId: "G-RHYSJ0TSF4"
 };
-
+const firebaseApp = initializeApp(firebaseConfig);
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -128,6 +129,19 @@ app.post('/obtenerPeliculasAleatorias', async (req, res) => {
 app.post('/obetenerId', async (req,res)=>{
   axios.get('https://api.themoviedb.org/3/movie/157336/videos?api_key=14044e05f9ee0b4a899fbebb64eeddf4');
 })
+
+app.post('/signUpFireBase', async (req,res)=>{
+  //En el body se va a enviar el email, la password, el nombre y el apellido
+  const auth = getAuth(firebaseApp);
+  const email = req.body.email;
+  const password = req.body.password;
+  try {
+    const userCredentials = await createUserWithEmailAndPassword(auth,email,password);
+    res.status(200).send('Usuario creado exitosamente');
+  } catch (err) {
+    res.status(500).send('Error al iniciar session'+err);
+  }
+});
 
 //API
 
