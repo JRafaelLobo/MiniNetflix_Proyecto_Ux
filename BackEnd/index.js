@@ -3,16 +3,29 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const { initializeApp } =require('firebase/app');
+
 
 const app = express();
 //const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/?retryWrites=true&w=majority';
 const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/MiniNetflix?retryWrites=true&w=majority&appName=MiniNetflixDatabase';
 const port = 3000;
+const firebaseConfig = {
+  apiKey: "AIzaSyD2ws9DwWSj3cW5HaG4iDnkH7c60sIL5DE",
+  authDomain: "experienciausuario-37738.firebaseapp.com",
+  projectId: "experienciausuario-37738",
+  storageBucket: "experienciausuario-37738.appspot.com",
+  messagingSenderId: "751453774480",
+  appId: "1:751453774480:web:0f0dbc39c6c56387166e15",
+  measurementId: "G-RHYSJ0TSF4"
+};
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json()); 
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
 
 const apiToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNDA0NGUwNWY5ZWUwYjRhODk5ZmJlYmI2NGVlZGRmNCIsInN1YiI6IjY2NWY2OTRiNzUyZWQ1YjBlYTdkNWI2OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.bZL-TdUZdqjUPNDAFdssr8RzL2DIGvJpp0N40sesXGU";
 
@@ -40,7 +53,7 @@ const peliculasFavoritasSchema = new Schema({
 
 /*Aquí creamos un modelo en Mongo */
 const Usuario = mongoose.model('Usuario', usuarioSchema);
-const PeliculasFav = mongoose.model('PeliculasFav',peliculasFavoritasSchema)
+const PeliculasFav = mongoose.model('PeliculasFav', peliculasFavoritasSchema)
 
 
 
@@ -51,26 +64,26 @@ app.post('/agregarUsuario', (req, res) => {
 
   const nuevoUsuario = new Usuario({
     nombre: nombre,
-    apellido:apellido,
-    _id : correo,
-    contrasenia : contrasenia
+    apellido: apellido,
+    _id: correo,
+    contrasenia: contrasenia
   })
 
   nuevoUsuario.save()
-  .then(doc => {
-    console.log('Nuevo usuario creado:', doc);
-    res.status(201).send('Nuevo usuario creado: ' + doc);
-  })
-  .catch(err => {
-    console.error('Error al crear el usuario:', err);
-    res.status(500).send('Error al crear el usuario: ' + err);
-  });
+    .then(doc => {
+      console.log('Nuevo usuario creado:', doc);
+      res.status(201).send('Nuevo usuario creado: ' + doc);
+    })
+    .catch(err => {
+      console.error('Error al crear el usuario:', err);
+      res.status(500).send('Error al crear el usuario: ' + err);
+    });
 });
 
 /*Buscar un usuario en la base de datos */
 app.post('/buscarUsuario', async (req, res) => {
   try {
-    const { _id } = req.body; 
+    const { _id } = req.body;
     const existeUsuario = await Usuario.find({ _id });
     if (existeUsuario != 0) {
       res.status(200).send('Usuario existe en la base de datos: ' + existeUsuario);
@@ -81,6 +94,40 @@ app.post('/buscarUsuario', async (req, res) => {
     res.status(500).send('Error al buscar el usuario: ' + err.message);
   }
 });
+
+/*Este codigo produce una cantidad especifica de informacion sobre peliculas completamente aleatorias  */
+app.post('/obtenerPeliculasAleatorias', async (req, res) => {
+  const urlBase = "https://api.themoviedb.org/3/movie/";
+  const apiKey = '14044e05f9ee0b4a899fbebb64eeddf4';
+  const numPeliculas = req.body.numPeliculas; 
+  let peliculas = [];
+  if (!numPeliculas || isNaN(numPeliculas) || numPeliculas <= 0) {
+    return res.status(400).send('Número de películas no válido');
+  }
+  try {
+    for (let index = 0; index < numPeliculas; index++) {
+      const idAleatorio = Math.floor(Math.random() * 1000000);
+      try {
+        const response = await axios.get(`${urlBase}${idAleatorio}?api_key=${apiKey}`);
+        if (response.data && response.data.id) {
+          peliculas.push(response.data);
+        } else {
+          index--; 
+        }
+      } catch (error) {
+        console.error(`Error al obtener la película con ID ${idAleatorio}:`, error.message);
+        index--; 
+      }
+    }
+    res.status(200).send(peliculas);
+  } catch (err) {
+    res.status(500).send('Error al buscar las películas: ' + err.message);
+  }
+});
+
+app.post('/obetenerId', async (req,res)=>{
+  axios.get('https://api.themoviedb.org/3/movie/157336/videos?api_key=14044e05f9ee0b4a899fbebb64eeddf4');
+})
 
 //API
 
