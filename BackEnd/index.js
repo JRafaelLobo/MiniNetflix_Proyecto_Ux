@@ -137,18 +137,7 @@ app.post('/obetenerId', async (req,res)=>{
   axios.get('https://api.themoviedb.org/3/movie/157336/videos?api_key=14044e05f9ee0b4a899fbebb64eeddf4');
 })
 
-app.post('/signUpFireBase', async (req,res)=>{
-  //En el body se va a enviar el email, la password, el nombre y el apellido
-  const auth = getAuth(firebaseApp);
-  const email = req.body.email;
-  const password = req.body.password;
-  try {
-    const userCredentials = await createUserWithEmailAndPassword(auth,email,password);
-    res.status(200).send('Usuario creado exitosamente');
-  } catch (err) {
-    res.status(500).send('Error al iniciar session'+err);
-  }
-});
+
 
 //API
 
