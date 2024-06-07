@@ -42,7 +42,8 @@ const usuarioSchema = new Schema({
   nombre: String,
   apellido: String,
   _id: String,
-  contrasenia: String
+  correo: String,
+  ubicacion:String
 });
 
 const peliculasFavoritasSchema = new Schema({
@@ -60,26 +61,32 @@ const PeliculasFav = mongoose.model('PeliculasFav', peliculasFavoritasSchema)
 
 //Rutas de conexión
 /*Agregar un usuario a la base de datos */
-app.post('/agregarUsuario', (req, res) => {
-  const { nombre, apellido, correo, contrasenia } = req.body;
+app.post('/agregarUsuario', async (req, res) => {
+  const auth = getAuth(firebaseApp);
+  const { email, password, nombre, apellido, ubicacion } = req.body;
 
-  const nuevoUsuario = new Usuario({
-    nombre: nombre,
-    apellido: apellido,
-    _id: correo,
-    contrasenia: contrasenia
-  })
+  try {
+    const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredentials.user.uid;
 
-  nuevoUsuario.save()
-    .then(doc => {
-      console.log('Nuevo usuario creado:', doc);
-      res.status(201).send('Nuevo usuario creado: ' + doc);
-    })
-    .catch(err => {
-      console.error('Error al crear el usuario:', err);
-      res.status(500).send('Error al crear el usuario: ' + err);
+    const nuevoUsuario = new Usuario({
+      nombre: nombre,
+      apellido: apellido,
+      _id: uid,  // Usar el UID de Firebase como _id en MongoDB
+      correo:email,
+      ubicacion: ubicacion
     });
+
+    await nuevoUsuario.save();
+
+    console.log('Nuevo usuario creado:', nuevoUsuario);
+    res.status(201).send('Nuevo usuario creado: ' + nuevoUsuario);
+  } catch (err) {
+    console.error('Error al crear el usuario:', err);
+    res.status(500).send('Error al crear el usuario: ' + err.message);
+  }
 });
+
 
 /*Buscar un usuario en la base de datos */
 app.post('/buscarUsuario', async (req, res) => {
