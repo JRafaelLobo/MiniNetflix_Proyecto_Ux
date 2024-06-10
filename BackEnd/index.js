@@ -133,8 +133,31 @@ app.post('/obtenerPeliculasAleatorias', async (req, res) => {
   }
 });
 
-app.post('/obetenerId', async (req,res)=>{
-  axios.get('https://api.themoviedb.org/3/movie/157336/videos?api_key=14044e05f9ee0b4a899fbebb64eeddf4');
+//Funcion para encontrar una pelicula basandose en el nombre
+app.post('/encontrarPelicula', async (req,res)=>{
+  const apiKey = '14044e05f9ee0b4a899fbebb64eeddf4';
+  if (!req.body.nombre) {
+    res.status(200).send("No se envio el nombre");
+  }else{
+    try {
+      const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
+        params: {
+          api_key: apiKey,
+          query: req.body.nombre
+        }
+      });
+  
+      if (response.data.results && response.data.results.length > 0) {
+        res.status(200).json(response.data.results);
+      } else {
+        res.status(404).send("Película no encontrada");
+      }
+    } catch (error) {
+      console.error('Error al buscar la película:', error);
+      res.status(500).send("Error al buscar la película");
+    }
+  }
+  
 });
 
 app.post('/logIn', async(req,res)=>{
