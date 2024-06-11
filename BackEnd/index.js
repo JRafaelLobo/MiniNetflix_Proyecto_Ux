@@ -47,9 +47,10 @@ const usuarioSchema = new Schema({
 });
 
 const peliculasFavoritasSchema = new Schema({
-  usuarioId: { type: String, required: true },
-  _id: [{ type: String }]
+  usuarioId: { type: String, required: true, unique: true },
+  peliculas: [{ type: String }]
 });
+
 
 
 
@@ -182,6 +183,51 @@ app.post('/logOut', async(req,res)=>{
     res.status(500).send('Error al cerrar sesión: ' + err.message);
   }
 });
+
+/*Funcion para marcar una pelicula como favorita */
+app.put('/marcarPeliculaFav', async (req, res) => {
+  const apiKey = '14044e05f9ee0b4a899fbebb64eeddf4';
+  const { userId, idPelicula } = req.body;
+
+  if (!userId || !idPelicula) {
+    return res.status(400).send("Faltan datos: userId o idPelicula");
+  }
+
+  try {
+    const response = await axios.get(`https://api.themoviedb.org/3/movie/${idPelicula}`, {
+      params: {
+        api_key: apiKey
+      }
+    });
+
+    if (response.data && response.data.id) {
+      let peliculasFav = await PeliculasFav.findOne({ usuarioId: userId });
+
+      if (!peliculasFav) {
+        peliculasFav = new PeliculasFav({
+          usuarioId: userId,
+          peliculas: [idPelicula]
+        });
+      } else {
+        if (peliculasFav.peliculas.includes(idPelicula)) {
+          return res.status(200).send("La película ya está marcada como favorita");
+        }
+        peliculasFav.peliculas.push(idPelicula);
+      }
+
+      await peliculasFav.save();
+      res.status(200).send('Película marcada como favorita');
+    } else {
+      res.status(404).send("Película no encontrada");
+    }
+  } catch (error) {
+    console.error('Error al marcar la película como favorita:', error);
+    res.status(500).send("Error al marcar la película como favorita");
+  }
+});
+
+
+
 
 
 //API
