@@ -161,6 +161,10 @@ app.post('/encontrarPelicula', async (req,res)=>{
   
 });
 
+app.post('/buscarUnicaPelicula', async (req,res) =>{
+
+});
+
 app.post('/logIn', async(req,res)=>{
   const auth = getAuth(firebaseApp);
   const email = req.body.email;
