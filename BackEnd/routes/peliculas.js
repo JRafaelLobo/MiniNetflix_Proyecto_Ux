@@ -7,5 +7,5 @@ const router = express.Router();
 router.put('/marcarFavorita', marcarFavorita);
 router.post('/encontrarPorNombre', encontrarPorNombre);
 router.post('/obtenerAleatorio', obtenerAleatorio);
-
+router.get('/',)
 module.exports = router;

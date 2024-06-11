@@ -53,8 +53,8 @@ const buscar = async (req, res) => {
 };
 
 /**
- * Crea el usuario
- * @param {*} req 
+ *  Crea el usuario
+ * @param {*} req
  * @param {*} res 
  */
 const agregar = async (req, res) => {
