@@ -1,5 +1,5 @@
 const axios = require('axios');
-const apiKey = '14044e05f9ee0b4a899fbebb64eeddf4';
+const apiKey = process.env.axiosApiKey;
 
 
 // Función para obtener los datos de una película
