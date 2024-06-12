@@ -1,6 +1,7 @@
 const { userModel } = require('../models/index')
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
-const firebaseApp = require('../config/firebase')
+const firebaseApp = require('../config/firebase');
+const { recompileSchema } = require('../models/mongoModels/Usuario');
 
 /**
  * LogIn de Usuario
@@ -64,7 +65,7 @@ const agregar = async (req, res) => {
     try {
         const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCredentials.user.uid;
-
+        console.log(uid);
         const nuevoUsuario = new userModel({
             nombre: nombre,
             apellido: apellido,
@@ -83,4 +84,24 @@ const agregar = async (req, res) => {
     }
 }
 
-module.exports = { logIn, logOut, buscar, agregar }
+const prueba = async (req, res) => {
+    const { email, password, nombre, apellido, ubicacion } = req.body;
+    const nuevoUsuario = new userModel({
+        nombre: nombre,
+        apellido: apellido,
+        _id: 24,  // Usar el UID de Firebase como _id en MongoDB
+        correo: email,
+        ubicacion: ubicacion
+    });
+    try {
+        await nuevoUsuario.save();
+        console.log('Usuario guardado con éxito');
+        res.status(201).send('Nuevo usuario creado: ' + nuevoUsuario);
+
+    } catch (error) {
+        console.log('Error al guardar el usuario:', error);
+        res.status(500).send('Error al crear el usuario: ' + err.message);
+    }
+}
+
+module.exports = { logIn, logOut, buscar, agregar, prueba }
