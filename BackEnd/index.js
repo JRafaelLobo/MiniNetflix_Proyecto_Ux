@@ -1,30 +1,34 @@
+require("dotenv").config()
 const express = require('express');
-const mongoose = require('mongoose');
+const dbConnect = require('./config/mongo.js');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const app = express();
-const mongoURI = 'mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/?retryWrites=true&w=majority&appName=MiniNetflixDatabase';
-const port = 5000;
+app.use(cors());
+app.use(express.json());
 
-//Rafa Base
-//User admin
-//password: 6Ikry9U4a88k1ktY
-//Enlace de Conexion: mongodb+srv://admin:6Ikry9U4a88k1ktY@mininetflixdatabase.kgwvbmp.mongodb.net/?retryWrites=true&w=majority&appName=MiniNetflixDatabase
-
-//Marcela BAse
-//User:
-//Password:
-//Enlace de Conexion: 
-
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Conectado a MongoDB'))
-  .catch(err => console.error('No se pudo conectar a MongoDB', err));
+const port = process.env.Port || 3000;
 
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/api', require('./routes'));
 
-app.get('/', (req, res) => {
-    res.send('<h1>Buenas</h1>')
-})
+// Middleware
+
+const apiToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNDA0NGUwNWY5ZWUwYjRhODk5ZmJlYmI2NGVlZGRmNCIsInN1YiI6IjY2NWY2OTRiNzUyZWQ1YjBlYTdkNWI2OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.bZL-TdUZdqjUPNDAFdssr8RzL2DIGvJpp0N40sesXGU";
+
+
+app.post('/buscarUnicaPelicula', async (req, res) => {
+
+});
+
+/*Funcion para marcar una pelicula como favorita */
 
 app.listen(port, () => {
-    console.log('Port is ' + port)
-})
+  console.log('Server running on port ' + port);
+});
+
+
+dbConnect();
