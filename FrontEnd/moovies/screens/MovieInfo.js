@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   ImageBackground,
   Image,
@@ -10,6 +11,30 @@ import {
 const image = require("../assets/movieinfobg.jpeg");
 
 function MovieInfo({ navigation }) {
+  const realizarPeticion = async () => {
+    let url = "http://localhost:3000/api/peliculas/encontrarPorNombre";
+    const data = {
+      nombre: "Star Wars",
+    };
+    const config = {
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded",
+        //tokens
+      },
+    };
+  };
+  function handleSubmit(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+    axios
+      .post(url, data, config)
+      .then((respuesta) => {
+        console.log(respuesta.data);
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  }
+
   return (
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
