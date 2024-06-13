@@ -59,5 +59,36 @@ const getRandomMovies = async (numPeliculas) => {
     }
 };
 
+const getMoviesByCategoryRandom = async (categoryId, numPeliculas) => {
+    const apiKey = process.env.TMDB_API_KEY; // Asegúrate de tener tu API key en el archivo .env
+    const urlBase = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${categoryId}`;
+    let peliculas = [];
+
+    if (!numPeliculas || isNaN(numPeliculas) || numPeliculas <= 0) {
+        throw new Error('Número de películas no válido');
+    }
+
+    try {
+        const response = await axios.get(urlBase);
+        const totalPages = response.data.total_pages;
+
+        for (let index = 0; index < numPeliculas; index++) {
+            const randomPage = Math.floor(Math.random() * totalPages) + 1; // Genera un número de página aleatorio
+            const pageResponse = await axios.get(`${urlBase}&page=${randomPage}`);
+            const movies = pageResponse.data.results;
+
+            if (movies && movies.length > 0) {
+                const randomMovie = movies[Math.floor(Math.random() * movies.length)];
+                peliculas.push(randomMovie);
+            } else {
+                index--; // Si no se encontró una película válida, intenta con otra página
+            }
+        }
+        return peliculas;
+    } catch (error) {
+        throw new Error('Error al buscar las películas: ' + error.message);
+    }
+};
+
 // Exportar la función
-module.exports = { getMovieDataID, getMovieDataName, getRandomMovies };
+module.exports = { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom };
