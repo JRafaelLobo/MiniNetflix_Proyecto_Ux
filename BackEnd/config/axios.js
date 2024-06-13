@@ -2,6 +2,8 @@ const axios = require('axios');
 const apiKey = process.env.axiosApiKey;
 
 
+
+
 // Función para obtener los datos de una película
 const getMovieDataID = async (movieId) => {
     try {
