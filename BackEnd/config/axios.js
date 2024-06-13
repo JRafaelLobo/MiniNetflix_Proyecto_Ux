@@ -60,7 +60,6 @@ const getRandomMovies = async (numPeliculas) => {
 };
 
 const getMoviesByCategoryRandom = async (categoryId, numPeliculas) => {
-    const apiKey = process.env.TMDB_API_KEY; // Asegúrate de tener tu API key en el archivo .env
     const urlBase = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${categoryId}`;
     let peliculas = [];
 
