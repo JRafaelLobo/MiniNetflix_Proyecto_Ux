@@ -61,5 +61,24 @@ const getRandomMovies = async (numPeliculas) => {
     }
 };
 
+const getVideoIds = async (idPelicula) => {
+    if (!idPelicula) {
+        throw new Error('No se proporcionó el ID de la película');
+    }
+
+    try {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${idPelicula}/videos`, {
+            params: {
+                api_key: apiKey
+            }
+        });
+
+        const videos = response.data.results.map(video => video.key);
+        return videos;
+    } catch (error) {
+        throw new Error('Error al obtener videos: ' + error.message);
+    }
+};
+
 // Exportar la función
-module.exports = { getMovieDataID, getMovieDataName, getRandomMovies };
+module.exports = { getMovieDataID, getMovieDataName, getRandomMovies, getVideoIds};

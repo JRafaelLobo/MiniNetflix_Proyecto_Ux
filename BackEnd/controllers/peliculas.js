@@ -1,4 +1,4 @@
-const { getMovieDataID, getMovieDataName, getRandomMovies } = require('../config/axios');
+const { getMovieDataID, getMovieDataName, getRandomMovies, getVideoIds } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
 
 
@@ -103,5 +103,25 @@ const obtenerAleatorio = async (req, res) => {
     }
   */
 }
+/**
+ * Funcion para obtener videos
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const obtenerVideos = async (req, res) => {
+  const idPelicula = req.body.id;
+  const youtubeBasico = "https://www.youtube.com/watch?v=";
 
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio };
+  try {
+    const idVideos = await getVideoIds(idPelicula);
+    const response = idVideos.map(videoId => youtubeBasico + videoId);
+    res.json(response);
+  } catch (error) {
+    console.error('Error al obtener los videos:', error.message);
+    res.status(500).send('Error al obtener los videos: ' + error.message);
+  }
+};
+
+
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio,obtenerVideos };
