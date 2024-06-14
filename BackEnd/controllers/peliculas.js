@@ -123,5 +123,55 @@ const obtenerVideos = async (req, res) => {
   }
 };
 
+/**
+ * Funcion para obtener las peliculas favoritas de ese usuario
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const obtenerPeliculasFavoritas = async (req, res) => {
+  const { idUsuario } = req.body;
+  if (!idUsuario) {
+    return res.status(400).send("Falta el userId");
+  }
+  try {
+    const peliculasFav = await peliculasFavoritasModel.findOne({ usuarioId: idUsuario });
+    if (!peliculasFav) {
+      return res.status(404).send("No se encontraron películas favoritas para este usuario");
+    } else {
+      return res.status(200).send(peliculasFav.peliculas);
+    }
+  } catch (error) {
+    console.error('Error al obtener las películas favoritas:', error);
+    res.status(500).send('Error al obtener las películas favoritas');
+  }
+};
 
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio,obtenerVideos };
+/**
+ * Funcion para borrar una pelicula favorita de ese usuario
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+
+const borrarPeliculaFavorita = async (req,res) => {
+  const {idUsuario,idPeliculaEliminar} = req.body;
+  if (!idUsuario || !idPeliculaEliminar) {
+    return res.status(400).send("Falta el userId o el idPelicula");
+  }
+  try {
+    const resultado = await peliculasFavoritasModel.updateOne(
+      { usuarioId: idUsuario },
+      { $pull: { peliculas: idPeliculaEliminar } }
+    );
+    if (resultado.modifiedCount > 0) {
+      res.status(200).send("Película eliminada de favoritos");
+    } else {
+      res.status(404).send("Película no encontrada en favoritos o usuario no encontrado");
+    }
+  } catch (error) {
+    console.error('Error al borrar la película favorita:', error);
+    res.status(500).send('Error al borrar la película favorita');
+  }
+}
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio,obtenerVideos,obtenerPeliculasFavoritas,borrarPeliculaFavorita };
