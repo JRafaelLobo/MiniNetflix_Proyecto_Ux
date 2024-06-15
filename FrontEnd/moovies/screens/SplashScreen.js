@@ -1,39 +1,42 @@
 import React, { useEffect } from 'react';
-import { ImageBackground, StyleSheet, View, Text } from 'react-native';
+import { View, Image, StyleSheet, ImageBackground } from 'react-native';
 
-const image = require('../assets/peliculasbg.jpg');
+const logo = require('../assets/logomoovies.png');
+const background = require('../assets/peliculasbg.jpg');
 
 const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Login');
     }, 3000);
-
     return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <Text style={styles.title}>Moovies</Text>
-      </ImageBackground>
-    </View>
+    //<ImageBackground source={background} style={styles.background}>
+      <View style={styles.container}>
+      <Image source={logo} style={styles.logo} resizeMode="contain" />
+      </View>
+    //</ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  image: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
-  title: {
+  logo: {
+    width: '80%', // Ajusta el tamaño del logo según sea necesario
+    maxHeight: '50%', // Ajusta la altura máxima del logo según sea necesario
+  },
+  text: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#fff',
+    marginTop: 10,
   },
 });
 
