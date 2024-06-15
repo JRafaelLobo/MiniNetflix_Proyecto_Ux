@@ -110,5 +110,29 @@ const getMoviesByCategoryRandom = async (categoryId, numPeliculas) => {
     }
 };
 
+const getMovieImage = async (idPelicula) =>{
+    if (!idPelicula) {
+        throw new Error('No se proporcionó el ID de la película');
+    }
+
+    try {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${idPelicula}`, {
+            params: {
+                api_key: apiKey
+            }
+        });
+
+        const imagen = response.data.backdrop_path;
+
+        if (!imagen) {
+            throw new Error('No se encontró la imagen de fondo para la película proporcionada');
+        }
+        return imagen;
+    } catch (error) {
+        throw new Error('Error al obtener imagen: ' + error.message);
+    }
+}
+
+
 // Exportar la función
-module.exports = { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds }
+module.exports = { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage }
