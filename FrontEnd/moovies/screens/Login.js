@@ -1,25 +1,40 @@
-import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ImageBackground } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
+import LoginForm from '../screens/LoginForm';
+import SignUpForm from '../screens/SignUpForm';
 
-const image = require('../assets/fondoLogin.jpg');
+const logo = require('../assets/logomoovies.png');
+const background = require('../assets/fondoLogin.jpg');
 
-const Login = ({ navigation }) => {
+
+const Login = () => {
+  const [view, setView] = useState('home');
+
+  const renderContent = () => {
+    switch (view) {
+      case 'login':
+        return <LoginForm onBack={() => setView('home')} />;
+      case 'signup':
+        return <SignUpForm onBack={() => setView('home')} />;
+      default:
+        return (
+          <View style={styles.buttonContainer}>
+            <Image source={logo} style={styles.logo} resizeMode="contain" />
+            <TouchableOpacity style={styles.button} onPress={() => setView('login')}>
+              <Text style={styles.buttonText}>Log In</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => setView('signup')}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        );
+    }
+  };
+
   return (
-    <ImageBackground source={image} resizeMode="cover" style={styles.background}>
+    <ImageBackground source={background} style={styles.background}>
       <View style={styles.overlay}>
-        <Text style={styles.title}>Moovies</Text>
-        <View style={styles.container}>
-          <Text style={styles.loginTitle}>Log In</Text>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username:</Text>
-            <TextInput style={styles.input} placeholder="Enter your username" />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password:</Text>
-            <TextInput style={styles.input} placeholder="Enter your password" secureTextEntry />
-          </View>
-          <Button title="Login" onPress={() => navigation.replace('Home')} />
-        </View>
+        {renderContent()}
       </View>
     </ImageBackground>
   );
@@ -29,47 +44,36 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 20,
+  buttonContainer: {
+    alignItems: 'center',
   },
-  container: {
-    padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    margin: 20,
+  logo: {
+    width: 300,
+    height: 300,
+    marginBottom: 40,
+  },
+  button: {
+    backgroundColor: '#ff5733',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
     borderRadius: 10,
-    width: '80%',
+    marginVertical: 10,
+    width: 200,
+    alignItems: 'center',
   },
-  loginTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  label: {
+  buttonText: {
+    color: '#fff',
     fontSize: 18,
-    color: '#333',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingLeft: 8,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    fontWeight: 'bold',
   },
 });
 
