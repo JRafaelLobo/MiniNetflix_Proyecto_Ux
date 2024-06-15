@@ -1,4 +1,4 @@
-const { getMovieDataID, getMovieDataName, getRandomMovies, getVideoIds } = require('../config/axios');
+const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
 
 
@@ -80,28 +80,6 @@ const obtenerAleatorio = async (req, res) => {
   }
   const response = await getRandomMovies(numPeliculas);
   res.send(response);
-
-  /*
-    try {
-      for (let index = 0; index < numPeliculas; index++) {
-        const idAleatorio = Math.floor(Math.random() * 1000000);
-        try {
-          const response = await getMovieData(idAleatorio);
-          if (response.data && response.data.id) {
-            peliculas.push(response.data);
-          } else {
-            index--;
-          }
-        } catch (error) {
-          console.error(`Error al obtener la película con ID ${idAleatorio}:`, error.message);
-          index--;
-        }
-      }
-      res.status(200).send(peliculas);
-    } catch (err) {
-      res.status(500).send('Error al buscar las películas: ' + err.message);
-    }
-  */
 }
 /**
  * Funcion para obtener videos
@@ -154,8 +132,8 @@ const obtenerPeliculasFavoritas = async (req, res) => {
  * @returns 
  */
 
-const borrarPeliculaFavorita = async (req,res) => {
-  const {idUsuario,idPeliculaEliminar} = req.body;
+const borrarPeliculaFavorita = async (req, res) => {
+  const { idUsuario, idPeliculaEliminar } = req.body;
   if (!idUsuario || !idPeliculaEliminar) {
     return res.status(400).send("Falta el userId o el idPelicula");
   }
@@ -174,4 +152,20 @@ const borrarPeliculaFavorita = async (req,res) => {
     res.status(500).send('Error al borrar la película favorita');
   }
 }
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio,obtenerVideos,obtenerPeliculasFavoritas,borrarPeliculaFavorita };
+
+const getMoviesByCategory = async (req, res) => {
+  await console.log(req.body.categoryId, req.body.numPeliculas);
+  getMoviesByCategoryRandom(req.body.categoryId, req.body.numPeliculas)
+    .then(peliculas => {
+      console.log("si")
+      console.log(peliculas)
+      res.send(peliculas)
+    })
+    .catch(error => {
+      console.log("no");
+      console.error(error);
+    });
+}
+
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory };
+
