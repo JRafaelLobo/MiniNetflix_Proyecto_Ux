@@ -2,8 +2,6 @@ const axios = require('axios');
 const apiKey = process.env.axiosApiKey;
 
 
-
-
 // Función para obtener los datos de una película
 const getMovieDataID = async (movieId) => {
     try {
@@ -80,34 +78,22 @@ const getVideoIds = async (idPelicula) => {
     }
 };
 
-const getMoviesByCategoryRandom = async (categoryId, numPeliculas) => {
-    const urlBase = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${categoryId}`;
-    let peliculas = [];
-
-    if (!numPeliculas || isNaN(numPeliculas) || numPeliculas <= 0) {
-        throw new Error('Número de películas no válido');
-    }
-
+const getMoviesByCategoryRandom = async (endpoint,cantidad) => {
+    const fetch = (await import('node-fetch')).default;
     try {
-        const response = await axios.get(urlBase);
-        const totalPages = response.data.total_pages;
-
-        for (let index = 0; index < numPeliculas; index++) {
-            const randomPage = Math.floor(Math.random() * totalPages) + 1; // Genera un número de página aleatorio
-            const pageResponse = await axios.get(`${urlBase}&page=${randomPage}`);
-            const movies = pageResponse.data.results;
-
-            if (movies && movies.length > 0) {
-                const randomMovie = movies[Math.floor(Math.random() * movies.length)];
-                peliculas.push(randomMovie);
-            } else {
-                index--; // Si no se encontró una película válida, intenta con otra página
-            }
+        const url = `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${apiKey}&language=en-US&page=1`;
+    
+        const response = await fetch(url);
+        const data = await response.json();
+    
+        if (!data.results || data.results.length === 0) {
+          throw new Error(`No se encontraron películas en el endpoint ${endpoint}`);
         }
-        return peliculas;
-    } catch (error) {
-        throw new Error('Error al buscar las películas: ' + error.message);
-    }
+    
+        return data.results.slice(0, cantidad); // Limitamos a la cantidad especificada
+      } catch (error) {
+        throw new Error('Error al obtener películas por categoría: ' + error.message);
+      }
 };
 
 const getMovieImage = async (idPelicula) =>{

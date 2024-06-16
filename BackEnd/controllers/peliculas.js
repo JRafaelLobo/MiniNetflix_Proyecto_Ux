@@ -154,6 +154,19 @@ const borrarPeliculaFavorita = async (req, res) => {
 }
 
 const getMoviesByCategory = async (req, res) => {
+  const { endpoint, cantidad } = req.body;
+
+  if (!endpoint || !cantidad) {
+    return res.status(400).send("Faltan parámetros: endpoint o cantidad");
+  }
+
+  try {
+    const movies = await getMoviesByCategoryRandom(endpoint, cantidad);
+    res.status(200).json(movies);
+  } catch (error) {
+    console.error('Error al obtener películas por categoría:', error);
+    res.status(500).send('Error al obtener películas por categoría');
+  }
 
 }
 
