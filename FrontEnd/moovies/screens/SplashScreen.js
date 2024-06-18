@@ -1,34 +1,46 @@
-import React from "react";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
-const image = require("../assets/peliculasbg.jpg");
+import React, { useEffect } from 'react';
+import { View, Image, StyleSheet, ImageBackground } from 'react-native';
 
-function SplashScreen({ navigation }) {
+const logo = require('../assets/logomoovies.png');
+const background = require('../assets/peliculasbg.jpg');
+
+const SplashScreen = ({ navigation }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.replace('Login');
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [navigation]);
+
   return (
+    <ImageBackground source={background} style={styles.background} resizeMode="cover">
     <View style={styles.container}>
-      <ImageBackground
-        source={image}
-        resizeMode="cover"
-        style={styles.image}
-      ></ImageBackground>
+      <Image source={logo} style={styles.logo} resizeMode="contain" />
     </View>
+  </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  image: {
-    flex: 1,
-    justifyContent: "center",
+  logo: {
+    width: 300,
+    height: 300,
   },
   text: {
-    color: "white",
-    fontSize: 42,
-    lineHeight: 84,
-    fontWeight: "bold",
-    textAlign: "center",
-    backgroundColor: "#000000c0",
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 20,
   },
 });
 
