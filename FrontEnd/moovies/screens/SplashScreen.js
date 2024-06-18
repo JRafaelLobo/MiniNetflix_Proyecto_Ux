@@ -13,30 +13,34 @@ const SplashScreen = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    //<ImageBackground source={background} style={styles.background}>
-      <View style={styles.container}>
+    <ImageBackground source={background} style={styles.background} resizeMode="cover">
+    <View style={styles.container}>
       <Image source={logo} style={styles.logo} resizeMode="contain" />
-      </View>
-    //</ImageBackground>
+    </View>
+  </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
   },
   logo: {
-    width: '80%', // Ajusta el tamaño del logo según sea necesario
-    maxHeight: '50%', // Ajusta la altura máxima del logo según sea necesario
+    width: 300,
+    height: 300,
   },
   text: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#fff',
-    marginTop: 10,
+    marginTop: 20,
   },
 });
 

@@ -1,127 +1,136 @@
+// screens/SignUpForm.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ImageBackground, Alert } from 'react-native';
+import axios from 'axios';
+
+const background = require('../assets/fondoLogin.jpg');
 
 const SignUpForm = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [location, setLocation] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const handleSignUp = async () => {
+    try {
+      const response = await axios.post('http://54.242.173.32:3000/api/usuario/agregar', {
+        email,
+        password,
+        nombre: firstName,
+        apellido: lastName,
+        ubicacion: location,
+      });
+      if (response.status === 201) {
+        navigation.replace('Home');
+      } else {
+        Alert.alert('Error', 'Failed to create account');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Something went wrong');
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>First Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your first name"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
+    <ImageBackground source={background} style={styles.background} resizeMode="cover">
+      <View style={styles.container}>
+        <Text style={styles.title}>Sign Up</Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>First Name:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your first name"
+            value={firstName}
+            onChangeText={setFirstName}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Last Name:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your last name"
+            value={lastName}
+            onChangeText={setLastName}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Location:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your location"
+            value={location}
+            onChangeText={setLocation}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
+        <Button title="Sign Up" onPress={handleSignUp} color="#E50914" />
       </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Last Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your last name"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Location:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your location"
-          value={location}
-          onChangeText={setLocation}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          value={email}
-          onChangeText={setEmail}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-      </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.replace('Home')}
-      >
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.buttonBack}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+  },
+  container: {
+    padding: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    margin: 30,
+    borderRadius: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 30,
   },
   label: {
     fontSize: 18,
-    color: '#333',
+    marginBottom: 5,
   },
   input: {
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
-    paddingLeft: 8,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    borderWidth: 1.5,
+    paddingLeft: 20,
+    borderRadius: 8,
   },
   button: {
-    backgroundColor: '#ff5733',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonBack: {
-    backgroundColor: '#333',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 10,
+    backgroundColor: '#E50914',
+    padding: 10,
+    borderRadius: 5,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
