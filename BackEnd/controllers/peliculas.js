@@ -1,4 +1,4 @@
-const { getMovieDataID, getMovieDataName, getRandomMovies } = require('../config/axios');
+const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
 
 
@@ -80,28 +80,113 @@ const obtenerAleatorio = async (req, res) => {
   }
   const response = await getRandomMovies(numPeliculas);
   res.send(response);
+}
+/**
+ * Funcion para obtener videos
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const obtenerVideos = async (req, res) => {
+  const idPelicula = req.body.id;
+  const youtubeBasico = "https://www.youtube.com/watch?v=";
 
-  /*
-    try {
-      for (let index = 0; index < numPeliculas; index++) {
-        const idAleatorio = Math.floor(Math.random() * 1000000);
-        try {
-          const response = await getMovieData(idAleatorio);
-          if (response.data && response.data.id) {
-            peliculas.push(response.data);
-          } else {
-            index--;
-          }
-        } catch (error) {
-          console.error(`Error al obtener la película con ID ${idAleatorio}:`, error.message);
-          index--;
-        }
-      }
-      res.status(200).send(peliculas);
-    } catch (err) {
-      res.status(500).send('Error al buscar las películas: ' + err.message);
+  try {
+    const idVideos = await getVideoIds(idPelicula);
+    const response = idVideos.map(videoId => youtubeBasico + videoId);
+    res.json(response);
+  } catch (error) {
+    console.error('Error al obtener los videos:', error.message);
+    res.status(500).send('Error al obtener los videos: ' + error.message);
+  }
+};
+
+/**
+ * Funcion para obtener las peliculas favoritas de ese usuario
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const obtenerPeliculasFavoritas = async (req, res) => {
+  const { idUsuario } = req.body;
+  if (!idUsuario) {
+    return res.status(400).send("Falta el userId");
+  }
+  try {
+    const peliculasFav = await peliculasFavoritasModel.findOne({ usuarioId: idUsuario });
+    if (!peliculasFav) {
+      return res.status(404).send("No se encontraron películas favoritas para este usuario");
+    } else {
+      return res.status(200).send(peliculasFav.peliculas);
     }
-  */
+  } catch (error) {
+    console.error('Error al obtener las películas favoritas:', error);
+    res.status(500).send('Error al obtener las películas favoritas');
+  }
+};
+
+/**
+ * Funcion para borrar una pelicula favorita de ese usuario
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+
+const borrarPeliculaFavorita = async (req, res) => {
+  const { idUsuario, idPeliculaEliminar } = req.body;
+  if (!idUsuario || !idPeliculaEliminar) {
+    return res.status(400).send("Falta el userId o el idPelicula");
+  }
+  try {
+    const resultado = await peliculasFavoritasModel.updateOne(
+      { usuarioId: idUsuario },
+      { $pull: { peliculas: idPeliculaEliminar } }
+    );
+    if (resultado.modifiedCount > 0) {
+      res.status(200).send("Película eliminada de favoritos");
+    } else {
+      res.status(404).send("Película no encontrada en favoritos o usuario no encontrado");
+    }
+  } catch (error) {
+    console.error('Error al borrar la película favorita:', error);
+    res.status(500).send('Error al borrar la película favorita');
+  }
 }
 
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio };
+const getMoviesByCategory = async (req, res) => {
+  const { endpoint, cantidad } = req.body;
+
+  if (!endpoint || !cantidad) {
+    return res.status(400).send("Faltan parámetros: endpoint o cantidad");
+  }
+
+  try {
+    const movies = await getMoviesByCategoryRandom(endpoint, cantidad);
+    res.status(200).json(movies);
+  } catch (error) {
+    console.error('Error al obtener películas por categoría:', error);
+    res.status(500).send('Error al obtener películas por categoría');
+  }
+
+}
+
+const obtenerImagen = async (req, res) => {
+  const { idPelicula } = req.body;
+  if (!idPelicula) {
+    return res.status(400).send("Falta el idPelicula");
+  }
+  try {
+    const resultado = await getMovieImage(idPelicula);
+    if (resultado) {
+      res.send({ imageUrl: `https://image.tmdb.org/t/p/w500${resultado}` });
+    } else {
+      res.status(404).send("Película no encontrada");
+    }
+  } catch (error) {
+    console.error('Error al obtener la imagen:', error);
+    res.status(500).send('Error al obtener la imagen');
+  }
+}
+
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory,obtenerImagen };
+

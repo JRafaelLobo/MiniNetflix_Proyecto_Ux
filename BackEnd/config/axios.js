@@ -59,5 +59,66 @@ const getRandomMovies = async (numPeliculas) => {
     }
 };
 
+const getVideoIds = async (idPelicula) => {
+    if (!idPelicula) {
+        throw new Error('No se proporcionó el ID de la película');
+    }
+
+    try {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${idPelicula}/videos`, {
+            params: {
+                api_key: apiKey
+            }
+        });
+
+        const videos = response.data.results.map(video => video.key);
+        return videos;
+    } catch (error) {
+        throw new Error('Error al obtener videos: ' + error.message);
+    }
+};
+
+const getMoviesByCategoryRandom = async (endpoint,cantidad) => {
+    const fetch = (await import('node-fetch')).default;
+    try {
+        const url = `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${apiKey}&language=en-US&page=1`;
+    
+        const response = await fetch(url);
+        const data = await response.json();
+    
+        if (!data.results || data.results.length === 0) {
+          throw new Error(`No se encontraron películas en el endpoint ${endpoint}`);
+        }
+    
+        return data.results.slice(0, cantidad); // Limitamos a la cantidad especificada
+      } catch (error) {
+        throw new Error('Error al obtener películas por categoría: ' + error.message);
+      }
+};
+
+const getMovieImage = async (idPelicula) =>{
+    if (!idPelicula) {
+        throw new Error('No se proporcionó el ID de la película');
+    }
+
+    try {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${idPelicula}`, {
+            params: {
+                api_key: apiKey
+            }
+        });
+
+        const imagen = response.data.backdrop_path;
+
+        if (!imagen) {
+            throw new Error('No se encontró la imagen de fondo para la película proporcionada');
+        }
+        return imagen;
+    } catch (error) {
+        throw new Error('Error al obtener imagen: ' + error.message);
+    }
+}
+
+
 // Exportar la función
-module.exports = { getMovieDataID, getMovieDataName, getRandomMovies };
+module.exports = { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage }
