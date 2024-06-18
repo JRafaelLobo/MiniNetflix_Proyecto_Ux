@@ -1,4 +1,4 @@
-const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds } = require('../config/axios');
+const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
 
 
@@ -154,18 +154,39 @@ const borrarPeliculaFavorita = async (req, res) => {
 }
 
 const getMoviesByCategory = async (req, res) => {
-  await console.log(req.body.categoryId, req.body.numPeliculas);
-  getMoviesByCategoryRandom(req.body.categoryId, req.body.numPeliculas)
-    .then(peliculas => {
-      console.log("si")
-      console.log(peliculas)
-      res.send(peliculas)
-    })
-    .catch(error => {
-      console.log("no");
-      console.error(error);
-    });
+  const { endpoint, cantidad } = req.body;
+
+  if (!endpoint || !cantidad) {
+    return res.status(400).send("Faltan parámetros: endpoint o cantidad");
+  }
+
+  try {
+    const movies = await getMoviesByCategoryRandom(endpoint, cantidad);
+    res.status(200).json(movies);
+  } catch (error) {
+    console.error('Error al obtener películas por categoría:', error);
+    res.status(500).send('Error al obtener películas por categoría');
+  }
+
 }
 
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory };
+const obtenerImagen = async (req, res) => {
+  const { idPelicula } = req.body;
+  if (!idPelicula) {
+    return res.status(400).send("Falta el idPelicula");
+  }
+  try {
+    const resultado = await getMovieImage(idPelicula);
+    if (resultado) {
+      res.send({ imageUrl: `https://image.tmdb.org/t/p/w500${resultado}` });
+    } else {
+      res.status(404).send("Película no encontrada");
+    }
+  } catch (error) {
+    console.error('Error al obtener la imagen:', error);
+    res.status(500).send('Error al obtener la imagen');
+  }
+}
+
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory,obtenerImagen };
 
