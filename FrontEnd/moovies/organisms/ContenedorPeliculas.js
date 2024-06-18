@@ -5,24 +5,31 @@ import {
   Image,
   StyleSheet,
   Text,
-  View,
+  ScrollView,
 } from "react-native";
-import ContenedorPeliculas from "../organisms/ContenedorPeliculas.js";
+import ContinueWatching from "../molecules/ContinueWatching";
+import Favorites from "../molecules/Favorites";
+import Popular from "../molecules/Popular";
+import TopRated from "../molecules/TopRated";
+import Upcoming from "../molecules/Upcoming";
 
 const image = require("../assets/peliculasbg.jpg");
 
 function Home({ navigation }) {
   return (
-    <View style={styles.container}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <ContenedorPeliculas />
-      </ImageBackground>
-    </View>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+      <ContinueWatching />
+      <Favorites />
+      <Popular />
+      <TopRated />
+      <Upcoming />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 100,
     flex: 1,
   },
   image: {
