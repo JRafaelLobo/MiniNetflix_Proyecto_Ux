@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage } = require('../config/axios');
+=======
+const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds } = require('../config/axios');
+>>>>>>> af1bae32e9971277d43ade17c9b1e6a01a3efbb2
 const { peliculasFavoritasModel } = require('../models/index');
 
 
@@ -154,6 +158,7 @@ const borrarPeliculaFavorita = async (req, res) => {
 }
 
 const getMoviesByCategory = async (req, res) => {
+<<<<<<< HEAD
   const { endpoint, cantidad } = req.body;
 
   if (!endpoint || !cantidad) {
@@ -189,4 +194,20 @@ const obtenerImagen = async (req, res) => {
 }
 
 module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory,obtenerImagen };
+=======
+  await console.log(req.body.categoryId, req.body.numPeliculas);
+  getMoviesByCategoryRandom(req.body.categoryId, req.body.numPeliculas)
+    .then(peliculas => {
+      console.log("si")
+      console.log(peliculas)
+      res.send(peliculas)
+    })
+    .catch(error => {
+      console.log("no");
+      console.error(error);
+    });
+}
+
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory };
+>>>>>>> af1bae32e9971277d43ade17c9b1e6a01a3efbb2
 
