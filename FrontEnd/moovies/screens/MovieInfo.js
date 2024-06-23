@@ -68,12 +68,12 @@ function MovieInfo({ route }) {
             uri: imageUrl,
           }}
         />
-        //contenedor para ver trailer
+        {/* contenedor para ver trailer */}
         <TouchableOpacity style={styles.button} onPress={handlePlayVideo}>
           <MaterialIcons name="play-arrow" size={40} color="#79C0B2" />
           <Text style={styles.buttonText}>Play Trailer</Text>
         </TouchableOpacity>
-        //contenedor para ver mas o ver menos
+        {/* contenedor para ver mas o ver menos */}
         <View style={styles.viewMoreContainer}>
           <Text style={styles.overviewText}>
             {showFullOverview ? overviewToShow : truncatedOverview}
@@ -92,7 +92,7 @@ function MovieInfo({ route }) {
             </View>
           )}
         </View>
-        //marcar favoritas
+        {/* marcar favoritas */}
         <View style={styles.favoriteContainer}>
           <TouchableOpacity
             activeOpacity={0.6}
@@ -110,7 +110,7 @@ function MovieInfo({ route }) {
         </View>
         <View style={{ height: 30 }} />
       </ScrollView>
-      //modal
+      {/* modal */}
       {video && (
         <Modal
           animationType="slide"
