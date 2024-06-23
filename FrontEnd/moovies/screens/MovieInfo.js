@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFonts } from "expo-font";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Video } from "expo-av";
 import {
   Button,
   ScrollView,
@@ -15,17 +16,28 @@ import {
 
 const image = require("../assets/movieinfobg.jpeg");
 function MovieInfo({ route }) {
+  const [showFullOverview, setShowFullOverview] = useState(false);
+
   const { data } = route.params;
   const { title, poster_path, release_date, overview, video, vote_average } =
     data;
+
+  console.log(video);
+  const handlePlayVideo = () => {
+    if (video) {
+      setModalVisible(true);
+    } else {
+      alert("No trailer available for this film.");
+    }
+  };
+
   const [fontsLoaded] = useFonts({
     Inter: require("../assets/fonts/InterVariable.ttf"),
   });
 
   if (!fontsLoaded) {
-    return undefined;
+    return null;
   }
-  const [showFullOverview, setShowFullOverview] = useState(false);
 
   const overviewContent = overview
     ? overview
@@ -56,6 +68,10 @@ function MovieInfo({ route }) {
             uri: imageUrl,
           }}
         />
+        <TouchableOpacity style={styles.button} onPress={handlePlayVideo}>
+          <MaterialIcons name="play-arrow" size={40} color="#79C0B2" />
+          <Text style={styles.buttonText}>Play Trailer</Text>
+        </TouchableOpacity>
         <View style={styles.viewMoreContainer}>
           <Text style={styles.overviewText}>
             {showFullOverview ? overviewToShow : truncatedOverview}
@@ -91,6 +107,33 @@ function MovieInfo({ route }) {
         </View>
         <View style={{ height: 30 }} />
       </ScrollView>
+      {video && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.modalView}>
+            <Video
+              source={{ uri: video }}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode="cover"
+              shouldPlay
+              useNativeControls
+              style={styles.video}
+            />
+            <Button
+              title="Close"
+              onPress={() => setModalVisible(!modalVisible)}
+            />
+          </View>
+        </Modal>
+      )}
     </ImageBackground>
   );
 }
@@ -148,6 +191,32 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: "flex-end",
     margin: 10,
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#37596D",
+    padding: 10,
+    margintop: 5,
+    marginBottom: 5,
+  },
+  buttonText: {
+    fontFamily: "Inter",
+    color: "#79C0B2",
+    fontStyle: "italic",
+    fontSize: 20,
+    marginLeft: 5,
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  video: {
+    width: deviceWidth - 40,
+    height: 300,
+    backgroundColor: "black",
   },
   favoriteContainer: {
     margin: 5,
