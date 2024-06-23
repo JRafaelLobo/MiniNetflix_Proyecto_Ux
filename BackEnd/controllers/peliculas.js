@@ -1,8 +1,6 @@
 const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
 const { auth } = require('../config/firebase');
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth')
-
 /**
  * Funcion para marcar una pelicula como favorita 
  * @param {*} req 
@@ -116,10 +114,13 @@ const obtenerVideos = async (req, res) => {
  * @returns 
  */
 const obtenerPeliculasFavoritas = async (req, res) => {
-  const { idUsuario } = req.body;
-  if (!idUsuario) {
-    return res.status(400).send("Falta el userId");
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
   }
+
+  const idUsuario = user.uid;
+
   try {
     const peliculasFav = await peliculasFavoritasModel.findOne({ usuarioId: idUsuario });
     if (!peliculasFav) {

@@ -10,13 +10,13 @@ const firebaseConfig = {
     measurementId: process.env.firebaseMeasurementId
 };
 
-let auth1;
+let authOriginal;
 const iniciar = async () => {
     const firebaseApp = await initializeApp(firebaseConfig);
-    auth1 = getAuth(firebaseApp);
+    authOriginal = getAuth(firebaseApp);
     console.log('Se ha conectado el firebase');
 }
 const auth = () => {
-    return auth1;
+    return authOriginal;
 }
 module.exports = { iniciar, auth };
