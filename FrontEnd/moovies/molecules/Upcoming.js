@@ -15,10 +15,12 @@ const Upcoming = () => {
     },
   ]);
   const realizarPeticion = async () => {
-    let url = "http://35.239.132.201:3000/api/peliculas/obtenerAleatorio";
+    let url =
+      "http://35.239.132.201:3000/api/peliculas/obtenerAleatorioPorCategorias";
 
     const body = {
-      numPeliculas: "4",
+      endpoint: "upcoming",
+      cantidad: "4",
     };
 
     const config = {
