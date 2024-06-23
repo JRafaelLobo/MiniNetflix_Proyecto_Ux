@@ -3,6 +3,7 @@ const express = require("express");
 const dbConnect = require("./config/mongo.js");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const firebase = require('./config/firebase.js');
 
 const app = express();
 app.use(cors());
@@ -20,12 +21,13 @@ app.use("/api", require("./routes"));
 const apiToken =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNDA0NGUwNWY5ZWUwYjRhODk5ZmJlYmI2NGVlZGRmNCIsInN1YiI6IjY2NWY2OTRiNzUyZWQ1YjBlYTdkNWI2OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.bZL-TdUZdqjUPNDAFdssr8RzL2DIGvJpp0N40sesXGU";
 
-app.post("/buscarUnicaPelicula", async (req, res) => {});
+app.post("/buscarUnicaPelicula", async (req, res) => { });
 
 /*Funcion para marcar una pelicula como favorita */
 
-app.listen(port, '0.0.0.0',() => {
+app.listen(port, '0.0.0.0', () => {
   console.log('Server running on port ' + port);
 });
 
 dbConnect();
+firebase.iniciar();
