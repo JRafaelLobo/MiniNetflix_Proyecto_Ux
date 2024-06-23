@@ -15,6 +15,9 @@ import {
 
 const image = require("../assets/movieinfobg.jpeg");
 function MovieInfo({ route }) {
+  const { data } = route.params;
+  const { title, poster_path, release_date, overview, video, vote_average } =
+    data;
   const [fontsLoaded] = useFonts({
     Inter: require("../assets/fonts/InterVariable.ttf"),
   });
@@ -22,9 +25,6 @@ function MovieInfo({ route }) {
   if (!fontsLoaded) {
     return undefined;
   }
-  const { data } = route.params;
-  const { title, poster_path, release_date, overview, video, vote_average } =
-    data;
   const [showFullOverview, setShowFullOverview] = useState(false);
 
   const overviewContent = overview

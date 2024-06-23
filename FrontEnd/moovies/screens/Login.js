@@ -1,31 +1,51 @@
 // screens/Login.js
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, ImageBackground, Alert } from 'react-native';
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Image,
+  ImageBackground,
+  Alert,
+} from "react-native";
+import axios from "axios";
 
-const background = require('../assets/fondoLogin.jpg');
+const background = require("../assets/fondoLogin.jpg");
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://54.242.173.32:3000/api/usuario/logIn', { email, password });
+      const response = await axios.post(
+        "http://54.242.173.32:3000/api/usuario/logIn",
+        { email, password }
+      );
       if (response.status === 200) {
-        navigation.replace('Home');
+        navigation.navigate("Home");
       } else {
-        Alert.alert('Error', 'Invalid email or password');
+        Alert.alert("Error", "Invalid email or password");
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Something went wrong');
+      Alert.alert("Error", "Something went wrong");
     }
   };
 
   return (
-    <ImageBackground source={background} style={styles.background} resizeMode="cover">
-      <Image source={require('../assets/logomoovies.png')} style={styles.logo} resizeMode="contain" />
+    <ImageBackground
+      source={background}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <Image
+        source={require("../assets/logomoovies.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Moovies</Text>
         <View style={styles.inputContainer}>
@@ -51,8 +71,11 @@ const Login = ({ navigation }) => {
         </View>
         <Button title="Log In" onPress={handleLogin} color="#E50914" />
         <Text style={styles.signupText}>
-          Don't have an account?{' '}
-          <Text style={styles.signupButton} onPress={() => navigation.navigate('SignUp')}>
+          Don't have an account?{" "}
+          <Text
+            style={styles.signupButton}
+            onPress={() => navigation.navigate("SignUp")}
+          >
             Sign Up
           </Text>
         </Text>
@@ -64,23 +87,23 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   container: {
     padding: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     borderRadius: 15,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   logo: {
     width: 280,
     height: 280,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   inputContainer: {
     marginBottom: 20,
@@ -90,7 +113,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingLeft: 8,
     borderRadius: 5,
@@ -98,11 +121,11 @@ const styles = StyleSheet.create({
   signupText: {
     marginTop: 20,
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   signupButton: {
-    color: '#E50914',
-    fontWeight: 'bold',
+    color: "#E50914",
+    fontWeight: "bold",
   },
 });
 
