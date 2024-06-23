@@ -142,9 +142,16 @@ const obtenerPeliculasFavoritas = async (req, res) => {
  */
 
 const borrarPeliculaFavorita = async (req, res) => {
-  const { idUsuario, idPeliculaEliminar } = req.body;
-  if (!idUsuario || !idPeliculaEliminar) {
-    return res.status(400).send("Falta el userId o el idPelicula");
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
+  }
+
+  const idUsuario = user.uid;
+
+  const { idPeliculaEliminar } = req.body;
+  if (!idPeliculaEliminar) {
+    return res.status(400).send("Falta la idPelicula");
   }
   try {
     const resultado = await peliculasFavoritasModel.updateOne(
