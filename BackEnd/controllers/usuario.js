@@ -1,6 +1,6 @@
 const { userModel } = require('../models/index')
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
-const firebaseApp = require('../config/firebase');
+const { auth } = require('../config/firebase');
 const { recompileSchema } = require('../models/mongoModels/Usuario');
 
 /**
@@ -9,12 +9,21 @@ const { recompileSchema } = require('../models/mongoModels/Usuario');
  * @param {*} res 
  */
 const logIn = async (req, res) => {
-    const auth = getAuth(firebaseApp);
+    //console.log(auth());
+    //console.log('------------');
+
+    const user = auth().currentUser;
+
+    if (user) {
+        res.status(401).send("Ya hay cuenta iniciada " + user.email);
+        return;
+    }
+
     const email = req.body.email;
     const password = req.body.password;
 
     try {
-        const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+        const userCredentials = await signInWithEmailAndPassword(auth(), email, password);
         res.status(200).send("Sesión inciada con éxito");
     } catch (err) {
         res.status(500).send('Error al iniciar sesion: ' + err.message);
@@ -27,12 +36,18 @@ const logIn = async (req, res) => {
  * @param {*} res 
  */
 const logOut = async (req, res) => {
-    const auth = getAuth(firebaseApp);
+    const user = auth().currentUser;
+    if (!user) {
+        res.status(401).send("No hay cuenta iniciada");
+        return;
+    }
+
+    emailAntiguo = user.email;
     try {
-        await signOut(auth);
-        res.status(200).send("Sesión cerrada con éxito");
+        await signOut(auth());
+        res.status(200).send("Sesión cerrada con éxito! Nos vemos pronto " + emailAntiguo);
     } catch (err) {
-        res.status(500).send('Error al cerrar sesión: ' + err.message);
+        res.status(500).send("Error al cerrar sesión: " + err.message);
     }
 }
 
@@ -59,11 +74,10 @@ const buscar = async (req, res) => {
  * @param {*} res 
  */
 const agregar = async (req, res) => {
-    const auth = getAuth(firebaseApp);
     const { email, password, nombre, apellido, ubicacion } = req.body;
 
     try {
-        const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredentials = await createUserWithEmailAndPassword(auth(), email, password);
         const uid = userCredentials.user.uid;
         console.log(uid);
         const nuevoUsuario = new userModel({

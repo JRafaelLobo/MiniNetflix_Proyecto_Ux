@@ -1,7 +1,6 @@
 const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
-
-
+const { auth } = require('../config/firebase');
 /**
  * Funcion para marcar una pelicula como favorita 
  * @param {*} req 
@@ -9,7 +8,14 @@ const { peliculasFavoritasModel } = require('../models/index');
  * @returns 
  */
 const marcarFavorita = async (req, res) => {
-  const { userId, idPelicula } = req.body;
+
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
+  }
+
+  const userId = user.uid;
+  const { idPelicula } = req.body;
 
   if (!userId || !idPelicula) {
     return res.status(400).send("Faltan datos: userId o idPelicula");
@@ -108,10 +114,13 @@ const obtenerVideos = async (req, res) => {
  * @returns 
  */
 const obtenerPeliculasFavoritas = async (req, res) => {
-  const { idUsuario } = req.body;
-  if (!idUsuario) {
-    return res.status(400).send("Falta el userId");
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
   }
+
+  const idUsuario = user.uid;
+
   try {
     const peliculasFav = await peliculasFavoritasModel.findOne({ usuarioId: idUsuario });
     if (!peliculasFav) {
@@ -133,9 +142,16 @@ const obtenerPeliculasFavoritas = async (req, res) => {
  */
 
 const borrarPeliculaFavorita = async (req, res) => {
-  const { idUsuario, idPeliculaEliminar } = req.body;
-  if (!idUsuario || !idPeliculaEliminar) {
-    return res.status(400).send("Falta el userId o el idPelicula");
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
+  }
+
+  const idUsuario = user.uid;
+
+  const { idPeliculaEliminar } = req.body;
+  if (!idPeliculaEliminar) {
+    return res.status(400).send("Falta la idPelicula");
   }
   try {
     const resultado = await peliculasFavoritasModel.updateOne(
@@ -188,5 +204,5 @@ const obtenerImagen = async (req, res) => {
   }
 }
 
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory,obtenerImagen };
+module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory, obtenerImagen };
 
