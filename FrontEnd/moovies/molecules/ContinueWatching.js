@@ -10,7 +10,7 @@ const ContinueWatching = () => {
       poster_path: "",
       release_date: "",
       overview: "",
-      video: "",
+      id: "",
       vote_average: "",
     },
   ]);
@@ -37,7 +37,7 @@ const ContinueWatching = () => {
           poster_path: movie.poster_path,
           release_date: movie.release_date,
           overview: movie.overview,
-          video: movie.video,
+          id: movie.id,
           vote_average: movie.vote_average,
         }));
         setMovieData(mappedData);
@@ -66,7 +66,6 @@ const ContinueWatching = () => {
         style={styles.scrollContainer}
       >
         {movieData.map((movie, index) => {
-          console.log("Movie data:", movie); // Add this log statement
           return <Pelicula key={index} data={movie} />;
         })}
       </ScrollView>

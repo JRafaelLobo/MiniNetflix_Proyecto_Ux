@@ -9,11 +9,13 @@ import {
 
 const Pelicula = (props) => {
   const navigation = useNavigation();
-  const { title, poster_path, release_date, overview, video, vote_average } =
+  const { title, poster_path, release_date, overview, id, vote_average } =
     props.data;
+
   const imageUrl = poster_path
     ? `https://image.tmdb.org/t/p/original${poster_path}`
     : "https://www.themoviedb.org/t/p/w1280/6XJM3C47iGOK9nFU6yLFCSf4U5c.jpg";
+  console.log("image in pelicula: ", imageUrl);
   return (
     <View style={styles.container}>
       <TouchableHighlight

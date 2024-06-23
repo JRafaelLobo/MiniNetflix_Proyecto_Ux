@@ -9,6 +9,8 @@ const Popular = () => {
       title: "",
       poster_path: "",
       release_date: "",
+      overview: "",
+      id: "",
       vote_average: "",
     },
   ]);
@@ -34,6 +36,8 @@ const Popular = () => {
           title: movie.title,
           poster_path: movie.poster_path,
           release_date: movie.release_date,
+          overview: movie.overview,
+          id: movie.id,
           vote_average: movie.vote_average,
         }));
         setMovieData(mappedData);

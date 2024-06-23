@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useFonts } from "expo-font";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Video } from "expo-av";
@@ -12,19 +13,60 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 
 const image = require("../assets/movieinfobg.jpeg");
 function MovieInfo({ route }) {
   const [showFullOverview, setShowFullOverview] = useState(false);
+  const [videoPath, setVideoPath] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { data } = route.params;
-  const { title, poster_path, release_date, overview, video, vote_average } =
-    data;
+  const { title, poster_path, release_date, overview, id, vote_average } = data;
+  console.log("movie id: ", id);
+  const realizarPeticion = async () => {
+    let url = "http://35.239.132.201:3000/api/peliculas/obtenerVideos";
 
-  console.log(video);
+    const body = {
+      id: id,
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.post(url, body, config);
+      if (res.data && res.data.length > 0) {
+        setVideoPath(res.data[0].video);
+        console.log("video: ", res.data[0].video);
+      } else {
+        console.log("No video data found in the response.");
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.log("Error in the request:", error.response.data.descripcion);
+      } else {
+        console.log("Error message:", error.message);
+      }
+    }
+  };
+  useEffect(() => {
+    realizarPeticion();
+  }, []);
+
+  const imageUrl = poster_path
+    ? `https://image.tmdb.org/t/p/original${poster_path}`
+    : "https://www.themoviedb.org/t/p/w1280/6XJM3C47iGOK9nFU6yLFCSf4U5c.jpg";
+
+  console.log("image in movie info: ", imageUrl);
+
   const handlePlayVideo = () => {
-    if (video) {
+    if (videoPath) {
       setModalVisible(true);
     } else {
       alert("No trailer available for this film.");
@@ -52,10 +94,6 @@ function MovieInfo({ route }) {
       ? `${overviewContent.slice(0, 100)}...`
       : overviewContent;
   const overviewToShow = overviewContent;
-
-  const imageUrl = poster_path
-    ? `https://image.tmdb.org/t/p/original${poster_path}`
-    : "https://www.themoviedb.org/t/p/w1280/6XJM3C47iGOK9nFU6yLFCSf4U5c.jpg";
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
@@ -111,7 +149,7 @@ function MovieInfo({ route }) {
         <View style={{ height: 30 }} />
       </ScrollView>
       {/* modal */}
-      {video && (
+      {videoPath && (
         <Modal
           animationType="slide"
           transparent={true}
@@ -122,7 +160,7 @@ function MovieInfo({ route }) {
         >
           <View style={styles.modalView}>
             <Video
-              source={{ uri: video }}
+              source={{ uri: videoPath }}
               rate={1.0}
               volume={1.0}
               isMuted={false}
