@@ -1,31 +1,98 @@
-// screens/Login.js
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, ImageBackground, Alert } from 'react-native';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Image, ImageBackground, Alert} from "react-native";
+import axios from "axios";
 
-const background = require('../assets/fondoLogin.jpg');
+
+const background = require("../assets/fondoLogin.jpg");
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [emailLogin, setEmailLogin] = useState("");
+  const [responseData, setResponseData] = useState(null);
+  const [passwordLogin, setPasswordLogin] = useState("");
 
-  const handleLogin = async () => {
+  const realizarPeticion = async () => {
+    const url = "http://35.239.132.201:3000/api/usuario/logIn";
+
+    const body = {
+      email: emailLogin,
+      password: passwordLogin,
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
     try {
-      const response = await axios.post('http://54.242.173.32:3000/api/usuario/logIn', { email, password });
-      if (response.status === 200) {
-        navigation.replace('Home');
-      } else {
-        Alert.alert('Error', 'Invalid email or password');
-      }
+      const res = await axios.post(url, body, config);
+      setResponseData(res.data);
+      console.log("response data: ", res.data);
+      return res.data;
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Something went wrong');
+      console.log(error.config);
+      if (error.response) {
+        console.log("Error data:", error.response.data);
+        console.log("Error status:", error.response.status);
+        console.log("Error headers:", error.response.headers);
+        Alert.alert(
+          "Error",
+          error.response.data.descripcion || "Something went wrong"
+        );
+      } else if (error.request) {
+        console.log("Error request:", error.request);
+        Alert.alert(
+          "Error",
+          "No response received from server. Check your network."
+        );
+      } else {
+        console.log("Error message:", error.message);
+        Alert.alert("Error", "Network error. Please try again later.");
+      }
     }
   };
 
+  const handleLogin = async () => {
+    const data = await realizarPeticion();
+    console.log("response login: ", data);
+
+    if (data && data.includes("Sesión inciada con éxito")) {
+      navigation.navigate("Home");
+    } else {
+      Alert.alert("Error", "Invalid email or password");
+    }
+  };
+  const CerrarSesion = async () => {
+    const url = "http://35.239.132.201:3000/api/usuario/logOut";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.post(url, {}, config);
+      console.log("mensaje logout: ", res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    CerrarSesion();
+  }, []);
+
   return (
-    <ImageBackground source={background} style={styles.background} resizeMode="cover">
-      <Image source={require('../assets/logomoovies.png')} style={styles.logo} resizeMode="contain" />
+    <ImageBackground
+      source={background}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <Image
+        source={require("../assets/logomoovies.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Moovies</Text>
         <View style={styles.inputContainer}>
@@ -33,8 +100,8 @@ const Login = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
+            value={emailLogin}
+            onChangeText={setEmailLogin}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -44,15 +111,18 @@ const Login = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
+            value={passwordLogin}
+            onChangeText={setPasswordLogin}
             secureTextEntry
           />
         </View>
         <Button title="Log In" onPress={handleLogin} color="#E50914" />
         <Text style={styles.signupText}>
-          Don't have an account?{' '}
-          <Text style={styles.signupButton} onPress={() => navigation.navigate('SignUp')}>
+          Don't have an account?{" "}
+          <Text
+            style={styles.signupButton}
+            onPress={() => navigation.navigate("SignUp")}
+          >
             Sign Up
           </Text>
         </Text>
@@ -64,23 +134,25 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   container: {
     padding: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     borderRadius: 15,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   logo: {
     width: 280,
     height: 280,
-    alignSelf: 'center',
+    alignSelf: "center",
+    marginBottom: 20,
   },
   inputContainer: {
     marginBottom: 20,
@@ -90,7 +162,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingLeft: 8,
     borderRadius: 5,
@@ -98,11 +170,11 @@ const styles = StyleSheet.create({
   signupText: {
     marginTop: 20,
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   signupButton: {
-    color: '#E50914',
-    fontWeight: 'bold',
+    color: "#E50914",
+    fontWeight: "bold",
   },
 });
 

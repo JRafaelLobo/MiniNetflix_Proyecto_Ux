@@ -14,7 +14,7 @@ const SignUpForm = ({ navigation }) => {
 
   const handleSignUp = async () => {
     try {
-      const response = await axios.post('http://54.242.173.32:3000/api/usuario/agregar', {
+      const response = await axios.post('http://35.239.132.201:3000/api/usuario/agregar', {
         email,
         password,
         nombre: firstName,

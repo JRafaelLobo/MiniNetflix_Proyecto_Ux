@@ -13,7 +13,7 @@ const image = require("../assets/movieinfobg.jpeg");
 
 function MovieInfo({ navigation }) {
   const realizarPeticion = async () => {
-    let url = "http://192.168.0.1:3000/api/peliculas/encontrarPorNombre";
+    let url = "http://35.239.132.201:3000/api/peliculas/encontrarPorNombre";
 
     const body = {
       nombre: "Star Wars",

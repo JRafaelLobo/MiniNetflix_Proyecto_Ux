@@ -39,14 +39,12 @@ const styles = StyleSheet.create({
     height: 325,
     borderRadius: 10,
     overflow: "hidden",
-    margin: 16,
-    padding: 0,
-    margin: 0,
+    margin: 16, // Add margin to create the gap between cards
   },
   text: {
     padding: 8,
     fontSize: 20,
-    tfontWeight: "bold",
+    fontWeight: "bold",
     color: "white",
   },
 });
