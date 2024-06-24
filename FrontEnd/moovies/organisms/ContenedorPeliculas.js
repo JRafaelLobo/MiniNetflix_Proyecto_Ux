@@ -36,7 +36,7 @@ function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
+    marginTop: 10,
     flex: 1,
   },
   image: {
