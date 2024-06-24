@@ -14,17 +14,101 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  Alert,
 } from "react-native";
 
 const image = require("../assets/movieinfobg.jpeg");
 function MovieInfo({ route }) {
+  const [isFavorite, setIsFavorite] = useState(false);
   const [showFullOverview, setShowFullOverview] = useState(false);
   const [videoPath, setVideoPath] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
   const { data } = route.params;
   const { title, poster_path, release_date, overview, id, vote_average } = data;
-  console.log("movie id: ", id);
+
+  const eliminarFavorita = async () => {
+    console.log("el id existe: ", id);
+    const url =
+      "http://35.239.132.201:3000/api/peliculas/borrarPeliculaFavorita";
+
+    const body = {
+      idPeliculaEliminar: id,
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.delete(url, body, config);
+      console.log("response data: ", res.data);
+      setIsFavorite(true);
+      Alert.alert("Success", "Movie marked as favorite");
+    } catch (error) {
+      console.log(error.config);
+      if (error.response) {
+        console.log("Error data:", error.response.data);
+        Alert.alert(
+          "Error",
+          error.response.data.descripcion || "Something went wrong"
+        );
+      } else if (error.request) {
+        console.log("Error request:", error.request);
+        Alert.alert(
+          "Error",
+          "No response received from server. Check your network."
+        );
+      } else {
+        console.log("Error message:", error.message);
+        Alert.alert("Error", "Network error. Please try again later.");
+      }
+    }
+  };
+
+  const marcarComoFavorita = async () => {
+    const url = "http://35.239.132.201:3000/api/peliculas/marcarFavorita";
+
+    const body = {
+      idPelicula: id,
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.put(url, body, config);
+      console.log("response data: ", res.data);
+      setIsFavorite(true);
+      Alert.alert("Success", "Movie marked as favorite");
+    } catch (error) {
+      console.log(error.config);
+      if (error.response) {
+        console.log("Error data:", error.response.data);
+        Alert.alert(
+          "Error",
+          error.response.data.descripcion || "Something went wrong"
+        );
+      } else if (error.request) {
+        console.log("Error request:", error.request);
+        Alert.alert(
+          "Error",
+          "No response received from server. Check your network."
+        );
+      } else {
+        console.log("Error message:", error.message);
+        Alert.alert("Error", "Network error. Please try again later.");
+      }
+    }
+  };
+
   const realizarPeticion = async () => {
     let url = "http://35.239.132.201:3000/api/peliculas/obtenerVideos";
 
@@ -95,6 +179,14 @@ function MovieInfo({ route }) {
       : overviewContent;
   const overviewToShow = overviewContent;
 
+  const toggleFavorite = async () => {
+    if (isFavorite) {
+      await eliminarFavorita();
+    } else {
+      await marcarComoFavorita();
+    }
+  };
+
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <ScrollView style={styles.container}>
@@ -132,12 +224,12 @@ function MovieInfo({ route }) {
         </View>
         {/* marcar favoritas */}
         <View style={styles.favoriteContainer}>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            underlayColor="#DDDDDD"
-            onPress={() => alert("Pressed!")}
-          >
-            <MaterialCommunityIcons name="star" size={30} color="gold" />
+          <TouchableOpacity onPress={toggleFavorite}>
+            <MaterialCommunityIcons
+              name={isFavorite ? "star" : "star-outline"}
+              size={30}
+              color={isFavorite ? "gold" : "gray"}
+            />
           </TouchableOpacity>
         </View>
         <View style={styles.contentContainer}>

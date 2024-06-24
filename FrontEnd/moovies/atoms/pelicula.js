@@ -15,7 +15,6 @@ const Pelicula = (props) => {
   const imageUrl = poster_path
     ? `https://image.tmdb.org/t/p/original${poster_path}`
     : "https://www.themoviedb.org/t/p/w1280/6XJM3C47iGOK9nFU6yLFCSf4U5c.jpg";
-  console.log("image in pelicula: ", imageUrl);
   return (
     <View style={styles.container}>
       <TouchableHighlight

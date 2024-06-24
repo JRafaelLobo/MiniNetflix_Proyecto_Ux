@@ -13,11 +13,8 @@ const Favorites = () => {
     },
   ]);
   const realizarPeticion = async () => {
-    let url = "http://35.239.132.201:3000/api/peliculas/obtenerAleatorio";
-
-    const body = {
-      numPeliculas: "4",
-    };
+    let url =
+      "http://35.239.132.201:3000/api/peliculas/obtenerPeliculasFavoritas";
 
     const config = {
       headers: {
@@ -27,7 +24,7 @@ const Favorites = () => {
     };
 
     try {
-      const res = await axios.post(url, body, config);
+      const res = await axios.post(url, {}, config);
       const responseData = res.data;
       if (Array.isArray(responseData) && responseData.length > 0) {
         const mappedData = responseData.map((movie) => ({

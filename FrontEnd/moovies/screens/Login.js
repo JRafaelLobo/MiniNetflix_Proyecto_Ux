@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Image, ImageBackground, Alert} from "react-native";
 import axios from "axios";
+
 
 const background = require("../assets/fondoLogin.jpg");
 
@@ -17,25 +9,6 @@ const Login = ({ navigation }) => {
   const [emailLogin, setEmailLogin] = useState("");
   const [responseData, setResponseData] = useState(null);
   const [passwordLogin, setPasswordLogin] = useState("");
-
-  const CerrarSesion = async () => {
-    const url = "http://35.239.132.201:3000/api/usuario/logOut";
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    };
-
-    try {
-      const res = await axios.post(url, {}, config);
-      console.log("mensaje logout: ", res.data);
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    CerrarSesion();
-  }, []);
 
   const realizarPeticion = async () => {
     const url = "http://35.239.132.201:3000/api/usuario/logIn";
@@ -93,6 +66,24 @@ const Login = ({ navigation }) => {
       Alert.alert("Error", "Invalid email or password");
     }
   };
+  const CerrarSesion = async () => {
+    const url = "http://35.239.132.201:3000/api/usuario/logOut";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.post(url, {}, config);
+      console.log("mensaje logout: ", res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    CerrarSesion();
+  }, []);
 
   return (
     <ImageBackground
@@ -161,9 +152,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logo: {
-    width: 300,
-    height: 300,
+    width: 280,
+    height: 280,
     alignSelf: "center",
+    marginBottom: 20,
   },
   inputContainer: {
     marginBottom: 20,

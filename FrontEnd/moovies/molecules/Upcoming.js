@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   text: {
     padding: 8,
     fontSize: 20,
-    tfontWeight: "bold",
+    fontWeight: "bold",
     color: "white",
   },
 });
