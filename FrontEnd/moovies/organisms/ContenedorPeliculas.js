@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   Text,
+  View,
   ScrollView,
 } from "react-native";
 import ContinueWatching from "../molecules/ContinueWatching";
@@ -23,6 +24,12 @@ function Home({ navigation }) {
       <Popular />
       <TopRated />
       <Upcoming />
+      <View style={styles.contentContainer}>
+        <Image
+          style={styles.tinyLogo}
+          source={require("../assets/lechita.png")}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -48,6 +55,15 @@ const styles = StyleSheet.create({
     height: 250,
     justifyContent: "flex-start",
     resizeMode: "cover",
+  },
+  tinyLogo: {
+    width: 50,
+    height: 100,
+    resizeMode: "cover",
+  },
+  contentContainer: {
+    alignItems: "flex-end",
+    margin: 10,
   },
 });
 

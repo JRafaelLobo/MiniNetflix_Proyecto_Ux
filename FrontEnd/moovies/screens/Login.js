@@ -33,6 +33,7 @@ const Login = ({ navigation }) => {
     } catch (error) {
       console.log(error.config);
       if (error.response) {
+        // The request was made, but the server responded with a status code that is not in the range of 2xx
         console.log("Error data:", error.response.data);
         console.log("Error status:", error.response.status);
         console.log("Error headers:", error.response.headers);
@@ -41,12 +42,14 @@ const Login = ({ navigation }) => {
           error.response.data.descripcion || "Something went wrong"
         );
       } else if (error.request) {
+        // The request was made, but no response was received
         console.log("Error request:", error.request);
         Alert.alert(
           "Error",
           "No response received from server. Check your network."
         );
       } else {
+        // Something happened in setting up the request that triggered an Error
         console.log("Error message:", error.message);
         Alert.alert("Error", "Network error. Please try again later.");
       }
@@ -89,7 +92,7 @@ const Login = ({ navigation }) => {
       resizeMode="cover"
     >
       <Image
-        source={require("../assets/logomoovies.png")}
+        source={require("../assets/red_letterlogo.png")}
         style={styles.logo}
         resizeMode="contain"
       />
