@@ -1,5 +1,4 @@
-// screens/Login.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,23 +14,83 @@ import axios from "axios";
 const background = require("../assets/fondoLogin.jpg");
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailLogin, setEmailLogin] = useState("");
+  const [responseData, setResponseData] = useState(null);
+  const [passwordLogin, setPasswordLogin] = useState("");
+
+  const CerrarSesion = async () => {
+    const url = "http://35.239.132.201:3000/api/usuario/logOut";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.post(url, {}, config);
+      console.log("mensaje logout: ", res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    CerrarSesion();
+  }, []);
+
+  const realizarPeticion = async () => {
+    const url = "http://35.239.132.201:3000/api/usuario/logIn";
+
+    const body = {
+      email: emailLogin,
+      password: passwordLogin,
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+
+    try {
+      const res = await axios.post(url, body, config);
+      setResponseData(res.data);
+      console.log("response data: ", res.data);
+      return res.data;
+    } catch (error) {
+      console.log(error.config);
+      if (error.response) {
+        // The request was made, but the server responded with a status code that is not in the range of 2xx
+        console.log("Error data:", error.response.data);
+        console.log("Error status:", error.response.status);
+        console.log("Error headers:", error.response.headers);
+        Alert.alert(
+          "Error",
+          error.response.data.descripcion || "Something went wrong"
+        );
+      } else if (error.request) {
+        // The request was made, but no response was received
+        console.log("Error request:", error.request);
+        Alert.alert(
+          "Error",
+          "No response received from server. Check your network."
+        );
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error message:", error.message);
+        Alert.alert("Error", "Network error. Please try again later.");
+      }
+    }
+  };
 
   const handleLogin = async () => {
-    try {
-      const response = await axios.post(
-        "http://54.242.173.32:3000/api/usuario/logIn",
-        { email, password }
-      );
-      if (response.status === 200) {
-        navigation.navigate("Home");
-      } else {
-        Alert.alert("Error", "Invalid email or password");
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Something went wrong");
+    const data = await realizarPeticion();
+    console.log("response login: ", data);
+
+    if (data && data.includes("Sesión inciada con éxito")) {
+      navigation.navigate("Home");
+    } else {
+      Alert.alert("Error", "Invalid email or password");
     }
   };
 
@@ -42,7 +101,7 @@ const Login = ({ navigation }) => {
       resizeMode="cover"
     >
       <Image
-        source={require("../assets/logomoovies.png")}
+        source={require("../assets/red_letterlogo.png")}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -53,8 +112,8 @@ const Login = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
+            value={emailLogin}
+            onChangeText={setEmailLogin}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -64,8 +123,8 @@ const Login = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
+            value={passwordLogin}
+            onChangeText={setPasswordLogin}
             secureTextEntry
           />
         </View>
@@ -88,6 +147,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
   container: {
     padding: 40,
@@ -101,8 +161,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logo: {
-    width: 280,
-    height: 280,
+    width: 300,
+    height: 300,
     alignSelf: "center",
   },
   inputContainer: {
