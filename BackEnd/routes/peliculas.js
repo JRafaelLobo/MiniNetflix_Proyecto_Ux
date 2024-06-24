@@ -8,7 +8,6 @@ router.put('/marcarFavorita', marcarFavorita);
 router.post('/encontrarPorNombre', encontrarPorNombre);
 router.post('/obtenerAleatorio', obtenerAleatorio);
 router.post('/obtenerVideos', obtenerVideos);
-router.post('/obtenerVideos', obtenerVideos);
 router.post('/obtenerPeliculasFavoritas', obtenerPeliculasFavoritas);
 router.delete('/borrarPeliculaFavorita', borrarPeliculaFavorita);
 router.post('/obtenerAleatorioPorCategorias', getMoviesByCategory);

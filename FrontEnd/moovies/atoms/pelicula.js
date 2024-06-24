@@ -1,21 +1,45 @@
-import axios from "axios";
-import { ImageBackground, Image, StyleSheet, Text, View } from "react-native";
-
-const image = {
-  uri: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-};
+import { useNavigation } from "@react-navigation/native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TouchableHighlight,
+} from "react-native";
 
 const Pelicula = (props) => {
-  const { Nombre, NomDirector } = props.data;
+  const navigation = useNavigation();
+  const { title, poster_path, release_date, overview, id, vote_average } =
+    props.data;
+
+  const imageUrl = poster_path
+    ? `https://image.tmdb.org/t/p/original${poster_path}`
+    : "https://www.themoviedb.org/t/p/w1280/6XJM3C47iGOK9nFU6yLFCSf4U5c.jpg";
+  console.log("image in pelicula: ", imageUrl);
   return (
     <View style={styles.container}>
-      <View style={styles.CardVideo}>
-        <Image style={styles.VideoImg} source={image} />
-        <View style={styles.InfoVideo}>
-          <Text style={styles.InfoVideoTitle}>{Nombre}</Text>
-          <Text style={styles.InfoVideoDirector}>{NomDirector}</Text>
+      <TouchableHighlight
+        activeOpacity={0.09}
+        onPress={() => {
+          navigation.navigate("MovieInfo", props);
+        }}
+      >
+        <View style={styles.CardVideo}>
+          <Image
+            style={styles.VideoImg}
+            source={{
+              uri: imageUrl,
+            }}
+          />
+          <View style={styles.InfoVideo}>
+            <Text style={styles.InfoVideoTitle}>{title}</Text>
+            <Text style={styles.InfoVideoRating}>Rating: {vote_average}</Text>
+            <Text style={styles.InfoVideoFecha}>
+              Realease date: {release_date}
+            </Text>
+          </View>
         </View>
-      </View>
+      </TouchableHighlight>
     </View>
   );
 };
@@ -47,10 +71,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center", // Center the text
   },
-  InfoVideoDirector: {
+  InfoVideoRating: {
     fontSize: 14,
     color: "white",
     textAlign: "center", // Center the text
+  },
+  InfoVideoFecha: {
+    fontSize: 9,
+    color: "gray",
+    textAlign: "left",
   },
 });
 export default Pelicula;

@@ -1,7 +1,6 @@
 const { getMovieDataID, getMovieDataName, getRandomMovies, getMoviesByCategoryRandom, getVideoIds, getMovieImage } = require('../config/axios');
 const { peliculasFavoritasModel } = require('../models/index');
-
-
+const { auth } = require('../config/firebase');
 /**
  * Funcion para marcar una pelicula como favorita 
  * @param {*} req 
@@ -9,7 +8,14 @@ const { peliculasFavoritasModel } = require('../models/index');
  * @returns 
  */
 const marcarFavorita = async (req, res) => {
-  const { userId, idPelicula } = req.body;
+
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
+  }
+
+  const userId = user.uid;
+  const { idPelicula } = req.body;
 
   if (!userId || !idPelicula) {
     return res.status(400).send("Faltan datos: userId o idPelicula");
@@ -107,11 +113,14 @@ const obtenerVideos = async (req, res) => {
  * @param {*} res 
  * @returns 
  */
-const obtenerPeliculasFavoritas = async (req, res) => {
-  const { idUsuario } = req.body;
-  if (!idUsuario) {
-    return res.status(400).send("Falta el userId");
+const obtenerPeliculasFavoritasID = async (req, res) => {
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
   }
+
+  const idUsuario = user.uid;
+
   try {
     const peliculasFav = await peliculasFavoritasModel.findOne({ usuarioId: idUsuario });
     if (!peliculasFav) {
@@ -125,6 +134,55 @@ const obtenerPeliculasFavoritas = async (req, res) => {
   }
 };
 
+
+/**
+ * Funcion para obtener las peliculas favoritas de ese usuario
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const obtenerPeliculasFavoritas = async (req, res) => {
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
+  }
+
+  const idUsuario = user.uid;
+
+  try {
+    const peliculasFav = await peliculasFavoritasModel.findOne({ usuarioId: idUsuario });
+    if (!peliculasFav) {
+      return res.status(404).send("No se encontraron películas favoritas para este usuario");
+    } else {
+      const peliculasArray = Array.isArray(peliculasFav.peliculas) ? peliculasFav.peliculas : [];
+
+      // Obtener los detalles de cada película usando sus IDs
+      const detallesPeliculas = await Promise.all(
+        peliculasArray.map(async (idPelicula) => {
+          try {
+            const pelicula = await getMovieDataID(idPelicula);
+            return pelicula;
+          } catch (error) {
+            console.error(`Error al obtener detalles de la película con ID ${idPelicula}:`, error);
+            return null;
+          }
+        })
+      );
+
+      // Filtrar las películas que no se pudieron obtener
+      const peliculasValidas = detallesPeliculas.filter(pelicula => pelicula !== null);
+
+      return res.status(200).send(peliculasValidas);
+    }
+  } catch (error) {
+    console.error('Error al obtener las películas favoritas:', error);
+    res.status(500).send('Error al obtener las películas favoritas');
+  }
+};
+
+
+
+
 /**
  * Funcion para borrar una pelicula favorita de ese usuario
  * @param {*} req 
@@ -133,9 +191,16 @@ const obtenerPeliculasFavoritas = async (req, res) => {
  */
 
 const borrarPeliculaFavorita = async (req, res) => {
-  const { idUsuario, idPeliculaEliminar } = req.body;
-  if (!idUsuario || !idPeliculaEliminar) {
-    return res.status(400).send("Falta el userId o el idPelicula");
+  const user = auth().currentUser;
+  if (!user) {
+    return res.status(401).send("Usuario no ha iniciado sesión");
+  }
+
+  const idUsuario = user.uid;
+
+  const { idPeliculaEliminar } = req.body;
+  if (!idPeliculaEliminar) {
+    return res.status(400).send("Falta la idPelicula");
   }
   try {
     const resultado = await peliculasFavoritasModel.updateOne(
@@ -188,5 +253,5 @@ const obtenerImagen = async (req, res) => {
   }
 }
 
-module.exports = { marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory,obtenerImagen };
+module.exports = { obtenerPeliculasFavoritasID, marcarFavorita, encontrarPorNombre, obtenerAleatorio, obtenerVideos, obtenerPeliculasFavoritas, borrarPeliculaFavorita, getMoviesByCategory, obtenerImagen };
 
